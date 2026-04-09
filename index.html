@@ -35,5 +35,21 @@
   </head>
   <body>
     <div id="root"></div>
+    <div id="debug" style="position: fixed; top: 0; left: 0; background: red; color: white; padding: 10px; font-size: 12px; z-index: 9999;">
+      Loading React App...
+    </div>
+    <script>
+      // Hide debug div when React mounts
+      window.addEventListener('load', function() {
+        var debugDiv = document.getElementById('debug');
+        if (debugDiv) {
+          setTimeout(() => {
+            if (document.getElementById('root').children.length > 0) {
+              debugDiv.style.display = 'none';
+            }
+          }, 2000);
+        }
+      });
+    </script>
   </body>
 </html>
