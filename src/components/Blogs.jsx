@@ -72,7 +72,7 @@ const Blogs = () => {
 
                       {/* Tags */}
                       <div className="flex flex-wrap gap-2 mb-4">
-                        {blog.tags.slice(0, 3).map((tag, tagIndex) => (
+                        {(blog.tags || []).slice(0, 3).map((tag, tagIndex) => (
                           <span
                             key={tagIndex}
                             className="px-3 py-1 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600"

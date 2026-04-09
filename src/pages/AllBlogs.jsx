@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import FilterControls from '../components/FilterControls';
 import { 
-  blogs, 
   blogCategories, 
   getAllTags, 
   searchBlogs, 
@@ -11,46 +10,25 @@ import {
   sortBlogs,
   getCategoryById 
 } from '../data/blogsData';
-import { fetchPublishedBlogs } from '../utils/supabase';
+import { getAllBlogs } from '../utils/blogLoader';
 
 const AllBlogs = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
-  const [supabaseBlogs, setSupabaseBlogs] = useState([]);
+  const [allBlogs, setAllBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch Supabase blogs on mount
+  // Load markdown blogs on mount
   useEffect(() => {
     async function loadBlogs() {
-      const dbBlogs = await fetchPublishedBlogs();
-      // Transform Supabase blogs to match local blog format
-      const transformed = dbBlogs.map(blog => ({
-        id: blog.id,
-        slug: blog.slug,
-        title: blog.title,
-        excerpt: blog.excerpt || '',
-        content: blog.content_md || '',
-        category: blog.category_id || 'ai', // Use category_id from DB or default to 'ai'
-        date: new Date(blog.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        readTime: `${Math.ceil((blog.content_md || '').split(' ').length / 200)} min read`,
-        tags: [], // Extract from content or add tags table later
-        source: blog.source || 'notion', // Track source
-        author: {
-          name: 'T Sai Ram Charan',
-          role: 'AI Engineer',
-          avatar: '/avatar.jpg'
-        }
-      }));
-      setSupabaseBlogs(transformed);
+      const blogs = await getAllBlogs();
+      setAllBlogs(blogs);
       setLoading(false);
     }
     loadBlogs();
   }, []);
-
-  // Merge local and Supabase blogs
-  const allBlogs = [...blogs, ...supabaseBlogs];
 
   const allTags = getAllTags();
 
@@ -170,11 +148,6 @@ const AllBlogs = () => {
                       <span className={`inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r ${category.color} text-white text-xs font-semibold rounded-full`}>
                         {category.icon} {category.name}
                       </span>
-                      {blog.source && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs font-medium rounded-full">
-                          📝 {blog.source}
-                        </span>
-                      )}
                     </div>
                   </div>
 
@@ -197,7 +170,7 @@ const AllBlogs = () => {
 
                     {/* Tags */}
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {blog.tags.slice(0, 3).map((tag, index) => (
+                      {(blog.tags || []).slice(0, 3).map((tag, index) => (
                         <span
                           key={index}
                           className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-md"

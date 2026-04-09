@@ -4,7 +4,7 @@
 Write-Host "Setting environment variables..."
 $env:VITE_SUPABASE_URL = "https://nkmrcaikhftifsraaqjp.supabase.co"
 $env:VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rbXJjYWlraGZ0aWZzcmFhcWpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzMzgwMjUsImV4cCI6MjA4OTkxNDAyNX0.dBtTN0vAlB75ffpm_HujegO_cJLHObaS_qMQ2pcKPhI"
-$env:VITE_API_URL = "https://portfolio-hazel-five-u6bdbwydof.vercel.app"
+$env:VITE_API_URL = "https://tsrcharan.vercel.app"
 
 Write-Host "Building..."
 npm run build

@@ -1,63 +1,26 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
-import { supabase, fetchBlogsByCategorySlug, fetchBlogsByTag } from '../utils/supabase'; // Import supabase helpers
-import { 
-  netToAiBlogs 
-} from '../data/netToAiData';
+import { getBlogsByCategory } from '../utils/blogLoader';
 
 const NetToAiTransition = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-  const [blogs, setBlogs] = useState(netToAiBlogs); // Start with local data
+  const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadRemoteBlogs();
+    loadBlogs();
   }, []);
 
-  async function loadRemoteBlogs() {
+  async function loadBlogs() {
     setLoading(true);
     try {
-      // 1. Fetch by Category 'dotnet-to-ai'
-      const blogsByCategory = await fetchBlogsByCategorySlug('dotnet-to-ai');
-      
-      // 2. Fetch by Tag 'dotnet-to-ai' or 'NetToAi'
-      const blogsByTag1 = await fetchBlogsByTag('dotnet-to-ai');
-      const blogsByTag2 = await fetchBlogsByTag('NetToAi');
-
-      // Combine and deduplicate remote blogs
-      const combinedRemote = [
-        ...(blogsByCategory || []), 
-        ...(blogsByTag1 || []),
-        ...(blogsByTag2 || [])
-      ];
-      
-      // Deduplicate by ID and Slug
-      const uniqueRemote = Array.from(new Map(combinedRemote.map(item => [item.slug, item])).values());
-
-      if (uniqueRemote.length > 0) {
-        // Transform remote blogs
-        const transformedRemote = uniqueRemote.map(b => ({
-          ...b,
-          date: b.created_at ? new Date(b.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown',
-          readTime: b.content_md ? `${Math.ceil(b.content_md.split(' ').length / 200)} min read` : '5 min read',
-          // Keep original category if exists, else fallback
-          category: b.category_id ? 'dotnet-to-ai' : (b.tags?.includes('dotnet-to-ai') ? 'dotnet-to-ai' : 'Tech'),
-          tags: b.tags || ['dotnet-to-ai'], 
-        }));
-
-        // Merge with local, prioritizing Remote (if slug collision, remote wins? Or local stays? Usually remote updates are preferred)
-        // Let's keep local if it's not in remote, but typically we want remote to override local eventually.
-        // For now, let's append unique remote blogs to local.
-        
-        const localSlugs = new Set(netToAiBlogs.map(b => b.slug));
-        const newRemoteBlogs = transformedRemote.filter(b => !localSlugs.has(b.slug));
-
-        setBlogs(prev => [...prev, ...newRemoteBlogs]);
-      }
+      // Fetch blogs in the 'dotnet-to-ai' category
+      const categoryBlogs = await getBlogsByCategory('dotnet-to-ai');
+      setBlogs(categoryBlogs);
     } catch (err) {
-      console.error('Error loading remote .NET to AI blogs:', err);
+      console.error('Error loading AI Transition blogs:', err);
     } finally {
       setLoading(false);
     }
@@ -161,7 +124,7 @@ const NetToAiTransition = () => {
 
                 <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {blog.tags.slice(0, 3).map(tag => (
+                    {(blog.tags || []).slice(0, 3).map(tag => (
                       <span 
                         key={tag}
                         className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded"

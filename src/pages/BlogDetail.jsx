@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { getBlogBySlug, getCategoryById } from '../data/blogsData';
-import { getNetToAiBlogBySlug } from '../data/netToAiData';
-import { fetchBlogBySlug } from '../utils/supabase';
+import { getCategoryById } from '../data/blogsData';
+import { getBlogBySlug } from '../utils/blogLoader';
 import ReactMarkdown from 'react-markdown';
 
 const BlogDetail = () => {
@@ -13,35 +12,7 @@ const BlogDetail = () => {
 
   useEffect(() => {
     async function loadBlog() {
-      // Try local data first
-      let foundBlog = getBlogBySlug(slug) || getNetToAiBlogBySlug(slug);
-      
-      // If not found locally, try Supabase (allow both published and draft)
-      if (!foundBlog) {
-        const dbBlog = await fetchBlogBySlug(slug, false); // false = don't require published
-        if (dbBlog) {
-          foundBlog = {
-            id: dbBlog.id,
-            slug: dbBlog.slug,
-            title: dbBlog.title,
-            excerpt: dbBlog.excerpt || '',
-            content: dbBlog.content_md || '',
-            // Handle Supabase join response which can be object or array
-            categorySlug: dbBlog.categories?.slug || (Array.isArray(dbBlog.categories) ? dbBlog.categories[0]?.slug : null) || 'ai',
-            date: new Date(dbBlog.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-            readTime: `${Math.ceil((dbBlog.content_md || '').split(' ').length / 200)} min read`,
-            tags: [],
-            source: dbBlog.source || 'notion',
-            status: dbBlog.status, // Include status to show draft indicator
-            author: {
-              name: 'T Sai Ram Charan',
-              role: 'AI Engineer',
-              avatar: '/avatar.jpg'
-            }
-          };
-        }
-      }
-      
+      const foundBlog = await getBlogBySlug(slug);
       setBlog(foundBlog);
       setLoading(false);
     }
@@ -99,7 +70,7 @@ const BlogDetail = () => {
     return <Navigate to="/blogs" replace />;
   }
 
-  const isTransitionBlog = blog.categorySlug === 'dotnet-to-ai' || blog.category === 'dotnet-to-ai';
+  const isTransitionBlog = blog.category === 'dotnet-to-ai';
 
   const category = (isTransitionBlog ? {
       id: 'dotnet-to-ai',
@@ -107,8 +78,8 @@ const BlogDetail = () => {
       icon: '🚀',
       color: 'from-purple-600 to-pink-600'
   } : getCategoryById(blog.category)) || {
-    id: 'ai',
-    name: 'AI & ML',
+    id: 'ai-ml',
+    name: 'AI & Machine Learning',
     icon: '🤖',
     color: 'from-blue-600 to-purple-600'
   };
@@ -130,11 +101,6 @@ const BlogDetail = () => {
             <span>{category.icon}</span>
             {category.name}
           </span>
-          {blog.status === 'draft' && (
-            <span className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-full text-sm font-semibold shadow-lg">
-              📝 Draft
-            </span>
-          )}
         </div>
 
         {/* Title */}
@@ -156,7 +122,7 @@ const BlogDetail = () => {
 
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-10">
-          {blog.tags.map((tag, index) => (
+          {(blog.tags || []).map((tag, index) => (
             <span
               key={index}
               className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-lg border border-gray-300 dark:border-gray-600"

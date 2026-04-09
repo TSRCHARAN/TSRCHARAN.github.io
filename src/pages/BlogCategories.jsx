@@ -1,13 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../utils/supabase';
 import { 
-  blogCategories as fallbackCategories, 
-  getBlogsByCategory, 
-  blogs as fallbackBlogs,
-  searchBlogs as searchFallbackBlogs,
+  blogCategories, 
   getCategoryById 
 } from '../data/blogsData';
+import { getAllBlogs } from '../utils/blogLoader';
 
 const BlogCategories = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,7 +14,7 @@ const BlogCategories = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Load categories and blogs from Supabase
+  // Load blogs from markdown files
   useEffect(() => {
     loadData();
   }, []);
@@ -25,45 +22,16 @@ const BlogCategories = () => {
   async function loadData() {
     setLoading(true);
     try {
-      // Load categories
-      const { data: dbCategories, error: catError } = await supabase
-        .from('categories')
-        .select('*')
-        .order('name');
-
-      // Load published blogs
-      const { data: dbBlogs, error: blogsError } = await supabase
-        .from('blogs')
-        .select('*')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false });
-
-      if (catError) {
-        console.error('Error loading categories:', catError);
-        setCategories(fallbackCategories);
-      } else {
-        // Transform DB categories to match the expected format
-        const transformedCategories = dbCategories.map(cat => ({
-          id: cat.id,
-          name: cat.name,
-          slug: cat.slug,
-          icon: cat.icon || '📝',
-          color: 'from-blue-500 to-purple-600', // Default gradient
-          description: cat.description || ''
-        }));
-        setCategories([...transformedCategories, ...fallbackCategories]);
-      }
-
-      if (blogsError) {
-        console.error('Error loading blogs:', blogsError);
-        setBlogs(fallbackBlogs);
-      } else {
-        setBlogs([...dbBlogs, ...fallbackBlogs]);
-      }
+      // Use static categories from blogsData
+      setCategories(blogCategories);
+      
+      // Load all markdown blogs
+      const allBlogs = await getAllBlogs();
+      setBlogs(allBlogs);
     } catch (err) {
-      console.error('Error:', err);
-      setCategories(fallbackCategories);
-      setBlogs(fallbackBlogs);
+      console.error('Error loading data:', err);
+      setCategories(blogCategories);
+      setBlogs([]);
     } finally {
       setLoading(false);
     }
@@ -81,7 +49,7 @@ const BlogCategories = () => {
 
   // Get blogs by category
   const getBlogsByCategoryId = (categoryId) => {
-    return blogs.filter(blog => blog.category_id === categoryId || blog.category === categoryId);
+    return blogs.filter(blog => blog.category === categoryId);
   };
 
   // Handle search
@@ -204,7 +172,7 @@ const BlogCategories = () => {
                                 ⏱️ {blog.readTime}
                               </span>
                               <div className="flex gap-1.5 flex-wrap">
-                                {blog.tags.slice(0, 3).map((tag, idx) => (
+                                {(blog.tags || []).slice(0, 3).map((tag, idx) => (
                                   <span key={idx} className="text-xs px-2.5 py-1 bg-blue-100 dark:bg-gray-700 text-blue-700 dark:text-blue-400 rounded-md font-medium">
                                     #{tag}
                                   </span>

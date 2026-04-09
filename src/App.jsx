@@ -8,7 +8,6 @@ import BlogCategories from './pages/BlogCategories'
 import AllBlogs from './pages/AllBlogs'
 import CategoryBlogs from './pages/CategoryBlogs'
 import BlogDetail from './pages/BlogDetail'
-import Admin from './pages/Admin'
 import NetToAiTransition from './pages/NetToAiTransition'
 
 function App() {
@@ -25,7 +24,6 @@ function App() {
             <Route path="/net-to-ai" element={<NetToAiTransition />} />
             <Route path="/blogs/category/:categoryId" element={<CategoryBlogs />} />
             <Route path="/blogs/:slug" element={<BlogDetail />} />
-              <Route path="/admin" element={<Admin />} />
           </Routes>
           <Footer />
         </div>

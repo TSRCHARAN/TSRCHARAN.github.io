@@ -1,11 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { supabase } from '../utils/supabase';
 import { 
   getCategoryById as getFallbackCategory, 
-  getBlogsByCategory as getFallbackBlogs,
-  searchBlogs as searchFallbackBlogs
 } from '../data/blogsData';
+import { getBlogsByCategory } from '../utils/blogLoader';
 
 const CategoryBlogs = () => {
   const { categoryId } = useParams();
@@ -34,7 +32,7 @@ const CategoryBlogs = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Load category and blogs from Supabase
+  // Load category and blogs from markdown files
   useEffect(() => {
     loadCategoryData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -45,88 +43,23 @@ const CategoryBlogs = () => {
     try {
       console.log('Loading category:', categoryId);
       
-      // Try to find category by slug first, then by ID
-      let dbCategory = null;
-      
-      // Try slug match first
-      const { data: slugMatch, error: slugError } = await supabase
-        .from('categories')
-        .select('*')
-        .eq('slug', categoryId)
-        .maybeSingle();
-      
-      if (slugMatch) {
-        dbCategory = slugMatch;
+      // Get category from static data
+      const categoryInfo = getFallbackCategory(categoryId);
+      if (categoryInfo) {
+        setCategory(categoryInfo);
+        
+        // Load blogs for this category from markdown
+        const categoryBlogs = await getBlogsByCategory(categoryId);
+        setAllBlogsInCategory(categoryBlogs);
       } else {
-        // Try ID match if slug didn't work
-        const { data: idMatch, error: idError } = await supabase
-          .from('categories')
-          .select('*')
-          .eq('id', categoryId)
-          .maybeSingle();
-        
-        if (idMatch) {
-          dbCategory = idMatch;
-        }
-      }
-
-      if (dbCategory) {
-        console.log('Found category:', dbCategory);
-        setCategory({
-          id: dbCategory.id,
-          name: dbCategory.name,
-          slug: dbCategory.slug,
-          icon: dbCategory.icon || '📝',
-          color: 'from-blue-500 to-purple-600',
-          description: dbCategory.description || ''
-        });
-
-        // Load blogs for this category
-        const { data: dbBlogs, error: blogsError } = await supabase
-          .from('blogs')
-          .select('*')
-          .eq('category_id', dbCategory.id)
-          .eq('status', 'published')
-          .order('created_at', { ascending: false });
-
-        if (blogsError) {
-          console.error('Error loading blogs:', blogsError);
-        }
-
-        console.log('Found blogs:', dbBlogs?.length || 0);
-        
-        // Transform DB blogs to match expected format
-        const transformedBlogs = (dbBlogs || []).map(blog => ({
-          ...blog,
-          tags: blog.tags || [],
-          date: blog.created_at ? new Date(blog.created_at).toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric' 
-          }) : '',
-          readTime: blog.content_md ? `${Math.ceil(blog.content_md.split(' ').length / 200)} min read` : '5 min read',
-          category: blog.category_id
-        }));
-        
-        const fallbackBlogs = getFallbackBlogs(categoryId);
-        setAllBlogsInCategory([...transformedBlogs, ...fallbackBlogs]);
-      } else {
-        console.log('Category not found in DB, trying fallback');
-        // Try fallback categories
-        const fallbackCat = getFallbackCategory(categoryId);
-        if (fallbackCat) {
-          setCategory(fallbackCat);
-          setAllBlogsInCategory(getFallbackBlogs(categoryId));
-        } else {
-          console.log('Category not found in fallback either');
-        }
+        console.log('Category not found');
       }
     } catch (err) {
       console.error('Error loading category:', err);
-      const fallbackCat = getFallbackCategory(categoryId);
-      if (fallbackCat) {
-        setCategory(fallbackCat);
-        setAllBlogsInCategory(getFallbackBlogs(categoryId));
+      const categoryInfo = getFallbackCategory(categoryId);
+      if (categoryInfo) {
+        setCategory(categoryInfo);
+        setAllBlogsInCategory([]);
       }
     } finally {
       setLoading(false);
@@ -263,7 +196,7 @@ const CategoryBlogs = () => {
                               ⏱️ {blog.readTime}
                             </span>
                             <div className="flex gap-1.5 flex-wrap">
-                              {blog.tags.slice(0, 3).map((tag, idx) => (
+                              {(blog.tags || []).slice(0, 3).map((tag, idx) => (
                                 <span key={idx} className="text-xs px-2.5 py-1 bg-blue-100 dark:bg-gray-700 text-blue-700 dark:text-blue-400 rounded-md font-medium">
                                   #{tag}
                                 </span>
@@ -330,7 +263,7 @@ const CategoryBlogs = () => {
                 {/* Tags */}
                 {blog.tags && blog.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {blog.tags.slice(0, 2).map((tag, tagIndex) => (
+                    {(blog.tags || []).slice(0, 2).map((tag, tagIndex) => (
                       <span
                         key={tagIndex}
                         className="px-3 py-1 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600"
