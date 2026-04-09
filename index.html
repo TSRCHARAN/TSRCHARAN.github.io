@@ -30,6 +30,8 @@
         }
       })();
     </script>
+    <script type="module" crossorigin src="/assets/index-Hdwzk5_h.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Dus6i3ID.css">
   </head>
   <body>
     <div id="root"></div>
@@ -37,13 +39,17 @@
       Loading React App...
     </div>
     <script>
+      console.log('Debug: Checking React mount...');
       // Hide debug div when React mounts
       window.addEventListener('load', function() {
         var debugDiv = document.getElementById('debug');
         if (debugDiv) {
           setTimeout(() => {
             if (document.getElementById('root').children.length > 0) {
+              console.log('Debug: React mounted, hiding debug div');
               debugDiv.style.display = 'none';
+            } else {
+              console.log('Debug: Root is empty, React may have crashed');
             }
           }, 2000);
         }
