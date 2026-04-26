@@ -10,9 +10,9 @@ export const PROFILE = {
   email: "tsr.charan@gmail.com",
   phone: "+91 9100152939",
   location: "India",
-  resumeUrl: "#", // Placeholder
-  github: "https://github.com/", // Placeholder
-  linkedin: "https://linkedin.com/in/", // Placeholder
+  resumeUrl: "https://drive.google.com/file/d/1gHk2PimviaHIeSDIsUj3XfN2LGdCoBjc/view?usp=drive_link", // Placeholder
+  github: "https://github.com/TSRCHARAN/", // Placeholder
+  linkedin: "https://www.linkedin.com/in/sai-ram-charan-t/", // Placeholder
 };
 
 export const EXPERIENCES = [
@@ -58,22 +58,109 @@ export const EDUCATION = [
 
 export const PROJECTS = [
   {
-    title: "S.AI – Conversational AI with Long-Term Memory",
+    id: "sai-ai",
+    title: "S.AI – Conversational AI with LTM",
     description: "Architected a conversational AI system with long-term memory using summarization-based context retention. Designed a FastAPI orchestration layer for prompt routing and token optimization. Enabled multi-turn dialogue with context-aware responses.",
+    fullDescription: `
+# S.AI – Conversational AI with Long-Term Memory
+
+A production-grade conversational AI system built to handle long-running dialogues without losing context.
+
+## Key Features
+- **Conversational Memory**: Implemented summarization-based memory where the model generates a periodic summary of the conversation to stay within token limits while retaining key information.
+- **FastAPI Orchestration**: Built a high-performance backend to route prompts and manage multiple LLM instances.
+- **Token Optimization**: Careful management of prompt construction to minimize costs and maximize context window utility.
+
+## Tech Stack
+- **Framework**: FastAPI
+- **LLMs**: OpenAI GPT-4, Anthropic Claude
+- **VDB**: Redis for fast session-based caching
+    `,
     tech: ["FastAPI", "LLM APIs", "Context Management"],
     link: "#",
+    githubUrl: "https://github.com/",
+    specs: [
+      { label: "Memory Type", value: "Sliding Window + Summary" },
+      { label: "Orchestration", value: "FastAPI Async" },
+      { label: "Latency", value: "< 200ms (p95)" },
+      { label: "Provider", value: "Multi-Model Router" }
+    ],
+    deliverables: [
+      "Dynamic Context Summarization Engine",
+      "Asynchronous Prompt Routing Layer",
+      "Token-Efficient Chat History Caching",
+      "Multi-Turn Evaluation Suite"
+    ]
   },
   {
+    id: "github-rag",
     title: "GitHub Repository RAG System",
     description: "Developed a RAG system for natural language querying over code repositories. Applied semantic chunking preserving code structure and generated code-aware embeddings for documentation and retrieval relevance.",
+    fullDescription: `
+# GitHub Repository RAG System
+
+A specialized Retrieval-Augmented Generation system designed for codebases.
+
+## Key Features
+- **Semantic Code Chunking**: Instead of naive text splitting, this system understands code structures (classes, functions) to create meaningful chunks.
+- **Code-Aware Embeddings**: Uses models optimized for code to ensure high retrieval relevance for technical queries.
+- **Natural Language Interaction**: Allows developers to "chat" with their codebase, asking about implementation details or architectural decisions.
+
+## Tech Stack
+- **Vector DB**: FAISS
+- **Backend**: FastAPI
+- **Preprocessing**: Custom Python scripts for code parsing
+    `,
     tech: ["FastAPI", "FAISS", "Semantic Chunking"],
     link: "#",
+    githubUrl: "https://github.com/",
+    specs: [
+      { label: "Chunking Strategy", value: "AST-Aware / Semantic" },
+      { label: "Vector Search", value: "FAISS (HNSW)" },
+      { label: "Embedding Model", value: "text-embedding-3-small" },
+      { label: "Query Expansion", value: "HyDE (Hypothetical Doc Embeddings)" }
+    ],
+    deliverables: [
+      "Automated Repository Indexing Pipeline",
+      "Hierarchy-Preserving Code Chunker",
+      "Semantic Search API Endpoint",
+      "Referenced Source Citation System"
+    ]
   },
   {
+    id: "youtube-rag",
     title: "YouTube Video RAG System",
     description: "Built a RAG system for question-answering over YouTube videos using transcript extraction. Processed transcripts into semantic chunks and designed prompt construction combining retrieved context and queries.",
+    fullDescription: `
+# YouTube Video RAG System
+
+Transforming video content into a searchable, interactive knowledge base.
+
+## Key Features
+- **Transcript Extraction**: Automated fetching and cleaning of YouTube transcripts.
+- **Semantic Indexing**: Chunks the transcript based on topic shifts rather than fixed intervals.
+- **Contextual QA**: Generates answers grounded strictly in the video content, providing timestamps for reference.
+
+## Tech Stack
+- **Orchestration**: FastAPI
+- **LLMs**: Gemini 1.5 Pro (for its massive context window and reasoning)
+- **Database**: Pinecone (for metadata-rich vector search)
+    `,
     tech: ["FastAPI", "LLM APIs", "Vector DB"],
     link: "#",
+    githubUrl: "https://github.com/",
+    specs: [
+      { label: "Data Source", value: "YouTube Data API v3" },
+      { label: "Indexing Type", value: "Topic-Based Semantic Chunks" },
+      { label: "LLM Orchestration", value: "LangChain Expression Language" },
+      { label: "Ref. Resolution", value: "Timestamp-to-Segment Mapping" }
+    ],
+    deliverables: [
+      "Transcript Fetcher & Cleaner",
+      "Topic-Segmenter AI Module",
+      "Video-Grounded QA Interface",
+      "Timestamp Citation Linker"
+    ]
   },
 ];
 
@@ -109,8 +196,8 @@ export const ACHIEVEMENTS = [
   },
   {
     title: "Scalable Backend Architect",
-    description: "Designed and implemented scalable backend systems for AI applications, improving latency and reliability.",
-  }
+    description: "Successfully transitioned legacy chatbot systems into high-performance RAG pipelines.",
+  },
 ];
 
 export const BLOGS = {

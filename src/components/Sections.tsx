@@ -221,21 +221,46 @@ export function Projects() {
             transition={{ delay: index * 0.1 }}
             className="glass rounded-2xl overflow-hidden group"
           >
-            <div className="p-8 relative overflow-hidden">
-              {/* Subtle Scanning Effect on the whole card now */}
+            <div className="p-8 relative overflow-hidden h-full flex flex-col">
+              {/* Subtle Scanning Effect */}
               <div className="scanning-line opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
               
-              <h3 className="text-2xl font-bold mb-3 flex items-center justify-between relative z-10">
-                {project.title}
-                <a href={project.link} className="text-zinc-500 hover:text-brand-400 transition-colors">
-                  <ExternalLink size={20} />
-                </a>
-              </h3>
-              <p className="text-zinc-400 mb-6 relative z-10">{project.description}</p>
-              <div className="flex flex-wrap gap-2 relative z-10">
-                {project.tech.map((t, i) => (
-                  <span key={i} className="text-xs font-mono text-brand-400">#{t}</span>
-                ))}
+              <div className="relative z-10 mb-6">
+                <div className="flex items-center justify-between gap-4 mb-2">
+                  <h3 className="text-xl md:text-2xl font-bold tracking-tight group-hover:text-brand-400 transition-colors">
+                    {project.title}
+                  </h3>
+                  {project.link !== "#" && (
+                    <a href={project.link} className="text-zinc-500 hover:text-brand-400 transition-colors shrink-0">
+                      <ExternalLink size={18} />
+                    </a>
+                  )}
+                </div>
+                <div className="h-px w-12 bg-brand-500/50" />
+              </div>
+
+              <div className="relative z-10 flex-grow">
+                <p className="text-zinc-400 text-sm md:text-base leading-relaxed mb-6">
+                  {project.description}
+                </p>
+              </div>
+              
+              <div className="relative z-10 mt-auto pt-6 border-t border-white/5 flex flex-wrap items-center justify-between gap-4">
+                <div className="flex flex-wrap gap-2">
+                  {project.tech.slice(0, 3).map((t, i) => (
+                    <span key={i} className="text-[10px] font-mono text-brand-400 bg-brand-500/5 px-2 py-0.5 rounded border border-brand-500/10">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+                
+                <Link 
+                  to={`/project/${project.id}`}
+                  className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-zinc-300 hover:text-brand-400 transition-all group/link"
+                >
+                  Details
+                  <ChevronRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
+                </Link>
               </div>
             </div>
           </motion.div>
@@ -244,6 +269,7 @@ export function Projects() {
     </section>
   );
 }
+
 
 export function Certifications() {
   return (
@@ -378,7 +404,9 @@ export function Contact() {
             Send Email
           </a>
           <a 
-            href="#"
+            href={PROFILE.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
             className="px-6 md:px-10 py-3 md:py-4 glass hover:bg-zinc-800 rounded-xl font-bold transition-all flex items-center justify-center gap-3 text-sm md:text-base"
           >
             <Linkedin size={18} />
