@@ -14,7 +14,7 @@ export default function BlogPost() {
     window.scrollTo(0, 0);
   }, [id]);
   
-  const allBlogs = [...BLOGS.interviewExperiences, ...BLOGS.learnings];
+  const allBlogs = [...BLOGS.basics, ...BLOGS.interviewExperiences, ...BLOGS.learnings];
   const blog = allBlogs.find(b => b.id === id);
 
   if (!blog) {

@@ -1,3 +1,7 @@
+import { basicBlogs } from "./data/blogs/basics";
+import { interviewBlogs } from "./data/blogs/interviews";
+import { learningBlogs } from "./data/blogs/learnings";
+
 export const PROFILE = {
   name: "SAI RAM CHARAN",
   role: "AI Engineer — Generative AI — LLM Systems — RAG — Agentic AI",
@@ -105,72 +109,12 @@ export const ACHIEVEMENTS = [
   },
   {
     title: "Scalable Backend Architect",
-    description: "Successfully transitioned legacy chatbot systems into high-performance RAG pipelines.",
-  },
+    description: "Designed and implemented scalable backend systems for AI applications, improving latency and reliability.",
+  }
 ];
 
 export const BLOGS = {
-  interviewExperiences: [
-    {
-      id: "interview-2024",
-      title: "Interviewing for AI Roles in 2024",
-      date: "Jan 2024",
-      excerpt: "Sharing my experience interviewing for AI & Backend roles at top tech firms.",
-      content: `
-# Interviewing for AI Roles in 2024
-
-The landscape of AI interviewing has shifted significantly. It's no longer just about knowing how to train a model; it's about **system design**, **RAG architectures**, and **agentic reasoning**.
-
-## Key Focus Areas
-1. **RAG Systems**: Expect deep dives into chunking strategies, vector databases, and retrieval optimization (HyDE, Re-ranking).
-2. **LLM Orchestration**: How do you handle long-term memory? How do you optimize tokens?
-3. **Backend Scalability**: AI doesn't live in a vacuum. You need to know how to build robust APIs (FastAPI/ASP.NET) to serve these models.
-
-## My Experience
-In my recent rounds, I was asked to design a system that could handle natural language queries over a massive codebase. This led to the creation of my GitHub RAG project...
-      `
-    },
-  ],
-  learnings: [
-    {
-      id: "rag-deep-dive",
-      title: "Deep Dive into RAG Pipelines",
-      date: "Mar 2024",
-      excerpt: "Everything I learned about HyDE, semantic chunking, and retrieval optimization.",
-      content: `
-# Deep Dive into RAG Pipelines
-
-Retrieval-Augmented Generation (RAG) is the backbone of modern LLM applications. Here's a breakdown of the advanced techniques I've implemented.
-
-## 1. Semantic Chunking
-Instead of fixed-size chunks, we use embedding similarity to find natural break points in text. This preserves context much better.
-
-## 2. HyDE (Hypothetical Document Embeddings)
-By generating a "fake" answer first and using *that* to search the vector DB, we bridge the gap between user queries and stored documents.
-
-## 3. Conversational Memory
-Implementing a sliding window or summarization-based memory is crucial for multi-turn dialogues.
-      `
-    },
-    {
-      id: "agentic-ai-rise",
-      title: "The Rise of Agentic AI",
-      date: "Apr 2024",
-      excerpt: "Why tool-calling and MCP-like integrations are the future of AI workflows.",
-      content: `
-# The Rise of Agentic AI
-
-We are moving from "Chatbots" to "Agents". Agents don't just talk; they **act**.
-
-## Tool Calling
-By integrating backend APIs as tools, LLMs can now perform tasks like:
-- Validating user data against a database.
-- Triggering automated workflows.
-- Interacting with external systems via MCP-like protocols.
-
-## The Future
-The next step is multi-agent systems where specialized agents collaborate to solve complex problems.
-      `
-    },
-  ],
+  basics: basicBlogs,
+  interviewExperiences: interviewBlogs,
+  learnings: learningBlogs,
 };
