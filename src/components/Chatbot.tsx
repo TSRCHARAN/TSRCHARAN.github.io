@@ -5,7 +5,7 @@ import { GoogleGenAI } from "@google/genai";
 import { PROFILE, EXPERIENCES, EDUCATION, PROJECTS, SKILLS, ACHIEVEMENTS, CERTIFICATIONS, BLOGS, LEADERSHIP } from "../constants";
 
 // Initialize Gemini API
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || '' });
 
 const SYSTEM_PROMPT = `
 You are Sai Ram Charan (Charan), a professional AI Engineer specializing in production-grade Generative AI systems. You are answering questions from visitors on your portfolio website.
@@ -68,6 +68,12 @@ export default function Chatbot() {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
+
+    // Check if API key is available
+    if (!import.meta.env.VITE_GEMINI_API_KEY) {
+      setMessages(prev => [...prev, { role: "assistant", content: "API key is not configured. Please set VITE_GEMINI_API_KEY in your environment variables." }]);
+      return;
+    }
 
     const userMessage = input.trim();
     setInput("");
