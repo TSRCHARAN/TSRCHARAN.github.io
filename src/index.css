@@ -1,28 +1,87 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-brand-50: #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-200: #bae6fd;
+  --color-brand-300: #7dd3fc;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
+  --color-brand-900: #0c4a6e;
+  --color-brand-950: #082f49;
+}
 
 @layer base {
-  * {
-    @apply scroll-smooth;
-  }
-
   html {
-    color-scheme: light dark;
+    scroll-behavior: smooth;
   }
-
-  html.dark {
-    color-scheme: dark;
-  }
-
   body {
-    @apply m-0 p-0 antialiased;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    @apply bg-zinc-950 text-zinc-100 antialiased selection:bg-brand-500/30 selection:text-brand-200;
   }
 }
 
 @layer utilities {
-  .text-gradient {
-    @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+  .glass {
+    @apply bg-zinc-900/50 backdrop-blur-md border border-zinc-800/50;
   }
+  
+  .glow-text {
+    text-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+  }
+
+  .grid-bg {
+    background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+    background-size: 40px 40px;
+  }
+
+  .data-flow-line {
+    @apply absolute h-px bg-gradient-to-r from-transparent via-brand-500/50 to-transparent w-full;
+    animation: data-flow 8s linear infinite;
+  }
+
+  @keyframes data-flow {
+    0% { transform: translateY(-100vh); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+  }
+
+  .scanning-line {
+    @apply absolute inset-0 pointer-events-none overflow-hidden;
+  }
+  
+  .scanning-line::after {
+    content: "";
+    @apply absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-brand-500/20 to-transparent;
+    animation: scan 3s ease-in-out infinite;
+  }
+
+  @keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(200%); }
+  }
+
+  .neural-node {
+    @apply absolute w-1 h-1 bg-brand-500/40 rounded-full;
+    box-shadow: 0 0 10px var(--color-brand-500);
+  }
+
+  .markdown-body {
+    @apply text-zinc-300 leading-relaxed;
+  }
+  .markdown-body h1 { @apply text-3xl font-bold text-white mb-6 mt-10; }
+  .markdown-body h2 { @apply text-2xl font-bold text-white mb-4 mt-8 border-b border-zinc-800 pb-2; }
+  .markdown-body h3 { @apply text-xl font-bold text-white mb-3 mt-6; }
+  .markdown-body p { @apply mb-4; }
+  .markdown-body ul { @apply list-disc list-inside mb-4 space-y-2; }
+  .markdown-body ol { @apply list-decimal list-inside mb-4 space-y-2; }
+  .markdown-body code { @apply bg-zinc-800 px-1.5 py-0.5 rounded font-mono text-brand-300 text-sm; }
+  .markdown-body strong { @apply text-white font-semibold; }
 }
